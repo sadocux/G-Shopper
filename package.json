@@ -1,7 +1,7 @@
 {
-  "name": "habbo-camera",
+  "name": "habbo-avarage",
   "version": "1.0.0",
-  "description": "habbo-camera",
+  "description": "habbo-avarage",
   "main": "index.js",
   "type": "module",
   "scripts": {
