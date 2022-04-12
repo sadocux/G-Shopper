@@ -84,6 +84,21 @@ const requestMarketPlaceAverage = typeId => {
     ext.sendToServer(packet)
 }
 
+const createMessage = message => {
+    let messagePacket = new HPacket('NotificationDialog', HDirection.TOCLIENT)
+        .appendString("")
+        .appendInt(3)
+        .appendString("display")
+        .appendString("BUBBLE")
+        .appendString("message")
+        .appendString(message, 'utf-8')
+        .appendString("image")
+        .appendString("")
+
+    ext.sendToClient(messagePacket);
+}
+
+
 ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Objects', hMessage => {
     let hPacket = hMessage.getPacket();
     let floorItems = HFloorItem.parse(hPacket)
@@ -153,5 +168,6 @@ ext.interceptByNameOrHash(HDirection.TOSERVER, "Chat", (hMessage) => {
     if (message.startsWith("!average")) {
         hMessage.blocked = true;
         state = !state;
+        createMessage(`Average checker ${state ? 'on' : 'off'}`)
     }
 });
