@@ -12,6 +12,7 @@ let ext = new Extension(extensionInfo);
 ext.run();
 
 let roomFloorItems
+let roomWallItems
 let floorResponse
 
 let clickedItem
@@ -63,12 +64,19 @@ function getFloorItemName(typeId) {
     }).name
 }
 
+function getWallItemName(typeId) {
+    return floorResponse.wallitemtypes.furnitype.find(data => {
+        return typeId == data.id
+    }).name
+}
+
 function sendMessage(message) {
     let packet = new HPacket(`{in:Shout}{i:1234}{s:"${message}"}{i:0}{i:0}{i:0}{i:-1}`)
     ext.sendToClient(packet)
 }
 
 function requestMarketPlaceAvarage(typeId) {
+    if (!typeId) return
     let packet = new HPacket(`{out:GetMarketplaceItemStats}{i:1}{i:${typeId}}`)
     ext.sendToServer(packet)
 }
@@ -88,11 +96,44 @@ ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Objects', hMessage => {
     roomFloorItems = array
 });
 
+ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Items', hMessage => {
+    let hPacket = hMessage.getPacket();
+    let wallItems = HWallItem.parse(hPacket)
+    console.log(wallItems)
+
+    let array = []
+    wallItems.forEach(item => {
+        array.push({
+            id: item.id,
+            typeId: item.typeId,
+            name: getWallItemName(item.typeId),
+        })
+    })
+    roomWallItems = array
+});
+
 ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseFurniture', hMessage => {
     let hPacket = hMessage.getPacket();
     let id = hPacket.readInteger();
 
     let item = roomFloorItems.find(item => {
+        return item.id == id
+    })
+
+    clickedItem = {
+        id: item.id,
+        typeId: item.typeId,
+        name: item.name,
+    }
+
+    requestMarketPlaceAvarage(item.typeId)
+});
+
+ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseWallItem', hMessage => {
+    let hPacket = hMessage.getPacket();
+    let id = hPacket.readInteger();
+
+    let item = roomWallItems.find(item => {
         return item.id == id
     })
 
