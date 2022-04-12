@@ -1,5 +1,6 @@
 import { Extension, HPacket, HDirection, HFloorItem, HWallItem } from 'gnode-api';
 import { readFile } from 'fs/promises';
+import fetch from 'node-fetch'
 
 const extensionInfo = JSON.parse(
     await readFile(
@@ -10,11 +11,61 @@ const extensionInfo = JSON.parse(
 let ext = new Extension(extensionInfo);
 ext.run();
 
-let furnitures
-let clicked
+let roomFloorItems
+let floorResponse
+
+let clickedItem
+
+ext.on('connect', (host) => {
+    switch (host) {
+        case 'game-br.habbo.com':
+            fetchHabbo('www.habbo.com.br');
+            break;
+        case 'game-de.habbo.com':
+            fetchHabbo('www.habbo.de');
+            break;
+        case 'game-es.habbo.com':
+            fetchHabbo('www.habbo.es');
+            break;
+        case 'game-fi.habbo.com':
+            fetchHabbo('www.habbo.fi');
+            break;
+        case 'game-fr.habbo.com':
+            fetchHabbo('www.habbo.fr');
+            break;
+        case 'game-it.habbo.com':
+            fetchHabbo('www.habbo.it');
+            break;
+        case 'game-nl.habbo.com':
+            fetchHabbo('www.habbo.nl');
+            break;
+        case 'game-s2.habbo.com':
+            fetchHabbo('sandbox.habbo.com');
+            break;
+        case 'game-tr.habbo.com':
+            fetchHabbo('www.habbo.com.tr');
+            break;
+        case 'game-us.habbo.com':
+            fetchHabbo('www.habbo.com');
+            break;
+    }
+});
+
+async function fetchHabbo(hotel) {
+    let floorUrl = `https://${hotel}/gamedata/furnidata_json/0`
+    let floorUrlResponse = await fetch(floorUrl);
+    floorResponse = await floorUrlResponse.json();
+}
+
+function getFloorItemName(typeId) {
+    return floorResponse.roomitemtypes.furnitype.find(data => {
+        return typeId == data.id
+    }).name
+}
 
 function sendMessage(message) {
-    console.log(message)
+    let packet = new HPacket(`{in:Shout}{i:1234}{s:"${message}"}{i:0}{i:0}{i:0}{i:-1}`)
+    ext.sendToClient(packet)
 }
 
 function requestMarketPlaceAvarage(typeId) {
@@ -25,32 +76,37 @@ function requestMarketPlaceAvarage(typeId) {
 ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Objects', hMessage => {
     let hPacket = hMessage.getPacket();
     let floorItems = HFloorItem.parse(hPacket)
-    //let wallItems = HWallItem.parse(hPacket)
 
     let array = []
     floorItems.forEach(item => {
         array.push({
             id: item.id,
-            typeId: item.typeId
+            typeId: item.typeId,
+            name: getFloorItemName(item.typeId),
         })
     })
-    furnitures = array
+    roomFloorItems = array
 });
 
 ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseFurniture', hMessage => {
     let hPacket = hMessage.getPacket();
     let id = hPacket.readInteger();
-    let typeId = furnitures.find(item => item.id === id).typeId;
 
-    clicked = {
-        id: id,
-        typeId: typeId
+    let item = roomFloorItems.find(item => {
+        return item.id == id
+    })
+
+    clickedItem = {
+        id: item.id,
+        typeId: item.typeId,
+        name: item.name,
     }
-    requestMarketPlaceAvarage(typeId)
+
+    requestMarketPlaceAvarage(item.typeId)
 });
 
 ext.interceptByNameOrHash(HDirection.TOCLIENT, 'MarketplaceItemStats', hMessage => {
     let hPacket = hMessage.getPacket();
     let avg = hPacket.readInteger();
-    sendMessage(`Furniture id: ${clicked.id} typeId: ${clicked.typeId} has ${avg} coins average price`)
-});
+    sendMessage(`${clickedItem.name} marketplace avarage is ${avg} coins`)
+}); 
