@@ -111,9 +111,9 @@ ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Items', hMessage => {
 
 ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseFurniture', hMessage => {
     if (!state) {
-        hMessage.blocked = true
         return
     }
+    hMessage.blocked = true
 
     let hPacket = hMessage.getPacket();
     let id = hPacket.readInteger();
@@ -127,9 +127,10 @@ ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseFurniture', hMessage => {
 
 ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseWallItem', hMessage => {
     if (!state) {
-        hMessage.blocked = true
         return
     }
+    hMessage.blocked = true
+
 
     let hPacket = hMessage.getPacket();
     let id = hPacket.readInteger();
@@ -143,9 +144,9 @@ ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseWallItem', hMessage => {
 
 ext.interceptByNameOrHash(HDirection.TOCLIENT, 'MarketplaceItemStats', hMessage => {
     if (!state) {
-        hMessage.blocked = true
         return
     }
+    hMessage.blocked = true
 
     let hPacket = hMessage.getPacket();
     let avg = hPacket.readInteger();
