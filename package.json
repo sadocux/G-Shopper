@@ -5,8 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+    "start": "node index.js",
+    "test": "node index.js -p 9092"
+    },
   "author": "rocawear",
   "license": "ISC",
   "dependencies": {
