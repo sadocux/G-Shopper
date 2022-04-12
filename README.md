@@ -1,14 +1,14 @@
-# habbo-avarage
+# habbo-average
 Node.js [G-Earth](https://github.com/sirjonasxx/G-Earth) extension<br>
 G-Node [G-Node](https://github.com/WiredSpast/G-Node)<br>
 Requires Node.js V15.0.0+
 
-![Avarage](avarage.png)
+![Screenshot](screenshot.png)
 
 ## How to install
 Using npm:
 ```cmd
-$ git clone https://github.com/rocawear-public/habbo-avarage.git
+$ git clone https://github.com/rocawear-public/habbo-average.git
 ```
 ```cmd
 $ npm install
@@ -22,9 +22,4 @@ $ node index.js -p 9092
 ## How to use  extension
 ```
 Double click furniture on room
-```
-
-## CAREFUL
-```
-Better not wear own clothes
 ```

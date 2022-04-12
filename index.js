@@ -17,6 +17,8 @@ let habboData
 
 let clickedItem
 
+let state = false
+
 ext.on('connect', host => {
     switch (host) {
         case 'game-br.habbo.com':
@@ -75,7 +77,7 @@ const sendMessage = message => {
     ext.sendToClient(packet)
 }
 
-const requestMarketPlaceAvarage = typeId => {
+const requestMarketPlaceAverage = typeId => {
     if (!typeId) return
 
     let packet = new HPacket(`{out:GetMarketplaceItemStats}{i:1}{i:${typeId}}`)
@@ -113,41 +115,43 @@ ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Items', hMessage => {
 });
 
 ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseFurniture', hMessage => {
+    if (!state) return
+
     let hPacket = hMessage.getPacket();
     let id = hPacket.readInteger();
 
-    let item = roomFloorItems.find(item => {
+    clickedItem = roomFloorItems.find(item => {
         return item.id == id
     })
 
-    clickedItem = {
-        id: item.id,
-        typeId: item.typeId,
-        name: item.name,
-    }
-
-    requestMarketPlaceAvarage(item.typeId)
+    requestMarketPlaceAverage(clickedItem.typeId)
 });
 
 ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseWallItem', hMessage => {
+    if (!state) return
+
     let hPacket = hMessage.getPacket();
     let id = hPacket.readInteger();
 
-    let item = roomWallItems.find(item => {
+    clickedItem = roomWallItems.find(item => {
         return item.id == id
     })
 
-    clickedItem = {
-        id: item.id,
-        typeId: item.typeId,
-        name: item.name,
-    }
-
-    requestMarketPlaceAvarage(item.typeId)
+    requestMarketPlaceAverage(clickedItem.typeId)
 });
 
 ext.interceptByNameOrHash(HDirection.TOCLIENT, 'MarketplaceItemStats', hMessage => {
     let hPacket = hMessage.getPacket();
     let avg = hPacket.readInteger();
-    sendMessage(`${clickedItem.name} marketplace avarage is ${avg} coins`)
-}); 
+    sendMessage(`${clickedItem.name} marketplace average is ${avg} coins`)
+});
+
+ext.interceptByNameOrHash(HDirection.TOSERVER, "Chat", (hMessage) => {
+    let hPacket = hMessage.getPacket();
+    let message = hPacket.readString().toLocaleLowerCase();
+
+    if (message.startsWith("!average")) {
+        hMessage.blocked = true;
+        state = !state;
+    }
+});
