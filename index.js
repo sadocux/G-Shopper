@@ -84,53 +84,36 @@ const requestMarketPlaceAverage = typeId => {
     ext.sendToServer(packet)
 }
 
-const createMessage = message => {
-    let messagePacket = new HPacket('NotificationDialog', HDirection.TOCLIENT)
-        .appendString("")
-        .appendInt(3)
-        .appendString("display")
-        .appendString("BUBBLE")
-        .appendString("message")
-        .appendString(message, 'utf-8')
-        .appendString("image")
-        .appendString("")
-
-    ext.sendToClient(messagePacket);
-}
-
 
 ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Objects', hMessage => {
     let hPacket = hMessage.getPacket();
     let floorItems = HFloorItem.parse(hPacket)
 
-    let array = []
-    floorItems.map((item) => {
-        array.push({
-            id: item.id,
-            typeId: item.typeId,
-            name: getFloorItemName(item.typeId),
-        })
+    roomFloorItems = floorItems.map((item) => ({
+        id: item.id,
+        typeId: item.typeId,
+        name: getFloorItemName(item.typeId),
     })
-    roomFloorItems = array
+    );
 });
 
 ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Items', hMessage => {
     let hPacket = hMessage.getPacket();
     let wallItems = HWallItem.parse(hPacket)
 
-    let array = []
-    wallItems.map((item) => {
-        array.push({
-            id: item.id,
-            typeId: item.typeId,
-            name: getWallItemName(item.typeId),
-        })
+    roomWallItems = wallItems.map((item) => ({
+        id: item.id,
+        typeId: item.typeId,
+        name: getWallItemName(item.typeId),
     })
-    roomWallItems = array
+    );
 });
 
 ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseFurniture', hMessage => {
-    if (!state) return
+    if (!state) {
+        hMessage.blocked = true
+        return
+    }
 
     let hPacket = hMessage.getPacket();
     let id = hPacket.readInteger();
@@ -143,7 +126,10 @@ ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseFurniture', hMessage => {
 });
 
 ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseWallItem', hMessage => {
-    if (!state) return
+    if (!state) {
+        hMessage.blocked = true
+        return
+    }
 
     let hPacket = hMessage.getPacket();
     let id = hPacket.readInteger();
@@ -156,6 +142,11 @@ ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseWallItem', hMessage => {
 });
 
 ext.interceptByNameOrHash(HDirection.TOCLIENT, 'MarketplaceItemStats', hMessage => {
+    if (!state) {
+        hMessage.blocked = true
+        return
+    }
+
     let hPacket = hMessage.getPacket();
     let avg = hPacket.readInteger();
     sendMessage(`${clickedItem.name} marketplace average is ${avg} coins`)
@@ -168,6 +159,6 @@ ext.interceptByNameOrHash(HDirection.TOSERVER, "Chat", (hMessage) => {
     if (message.startsWith("!average")) {
         hMessage.blocked = true;
         state = !state;
-        createMessage(`Average checker ${state ? 'on' : 'off'}`)
+        sendMessage(`Average checker ${state ? 'on' : 'off'}`)
     }
 });
