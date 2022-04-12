@@ -87,7 +87,7 @@ ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Objects', hMessage => {
     let floorItems = HFloorItem.parse(hPacket)
 
     let array = []
-    floorItems.forEach(item => {
+    floorItems.map((item) => {
         array.push({
             id: item.id,
             typeId: item.typeId,
@@ -102,7 +102,7 @@ ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Items', hMessage => {
     let wallItems = HWallItem.parse(hPacket)
 
     let array = []
-    wallItems.forEach(item => {
+    wallItems.map((item) => {
         array.push({
             id: item.id,
             typeId: item.typeId,
