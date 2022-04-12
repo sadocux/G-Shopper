@@ -1,5 +1,13 @@
-import { Extension, HPacket, HDirection, HFloorItem, HWallItem } from 'gnode-api';
-import { readFile } from 'fs/promises';
+import {
+    Extension,
+    HPacket,
+    HDirection,
+    HFloorItem,
+    HWallItem
+} from 'gnode-api';
+import {
+    readFile
+} from 'fs/promises';
 import fetch from 'node-fetch'
 
 const extensionInfo = JSON.parse(
@@ -84,7 +92,6 @@ const requestMarketPlaceAverage = typeId => {
     ext.sendToServer(packet)
 }
 
-
 ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Objects', hMessage => {
     let hPacket = hMessage.getPacket();
     let floorItems = HFloorItem.parse(hPacket)
@@ -92,9 +99,8 @@ ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Objects', hMessage => {
     roomFloorItems = floorItems.map((item) => ({
         id: item.id,
         typeId: item.typeId,
-        name: getFloorItemName(item.typeId),
-    })
-    );
+        name: getFloorItemName(item.typeId)
+    }));
 });
 
 ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Items', hMessage => {
@@ -104,15 +110,13 @@ ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Items', hMessage => {
     roomWallItems = wallItems.map((item) => ({
         id: item.id,
         typeId: item.typeId,
-        name: getWallItemName(item.typeId),
-    })
-    );
+        name: getWallItemName(item.typeId)
+    }));
 });
 
 ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseFurniture', hMessage => {
-    if (!state) {
-        return
-    }
+    if (!state) return
+
     hMessage.blocked = true
 
     let hPacket = hMessage.getPacket();
@@ -126,11 +130,9 @@ ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseFurniture', hMessage => {
 });
 
 ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseWallItem', hMessage => {
-    if (!state) {
-        return
-    }
-    hMessage.blocked = true
+    if (!state) return
 
+    hMessage.blocked = true
 
     let hPacket = hMessage.getPacket();
     let id = hPacket.readInteger();
@@ -143,9 +145,8 @@ ext.interceptByNameOrHash(HDirection.TOSERVER, 'UseWallItem', hMessage => {
 });
 
 ext.interceptByNameOrHash(HDirection.TOCLIENT, 'MarketplaceItemStats', hMessage => {
-    if (!state) {
-        return
-    }
+    if (!state) return
+
     hMessage.blocked = true
 
     let hPacket = hMessage.getPacket();

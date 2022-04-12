@@ -21,5 +21,6 @@ $ node index.js -p 9092
 
 ## How to use  extension
 ```
+!average to toggle ON/OFF
 Double click furniture on room
 ```
