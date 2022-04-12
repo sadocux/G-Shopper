@@ -17,7 +17,7 @@ let habboData
 
 let clickedItem
 
-ext.on('connect', (host) => {
+ext.on('connect', host => {
     switch (host) {
         case 'game-br.habbo.com':
             fetchHabbo('www.habbo.com.br');
@@ -52,31 +52,32 @@ ext.on('connect', (host) => {
     }
 });
 
-async function fetchHabbo(hotel) {
+const fetchHabbo = async hotel => {
     let url = `https://${hotel}/gamedata/furnidata_json/0`
     let res = await fetch(url);
     habboData = await res.json();
 }
 
-function getFloorItemName(typeId) {
+const getFloorItemName = typeId => {
     return habboData.roomitemtypes.furnitype.find(data => {
         return typeId == data.id
     }).name
 }
 
-function getWallItemName(typeId) {
+const getWallItemName = typeId => {
     return habboData.wallitemtypes.furnitype.find(data => {
         return typeId == data.id
     }).name
 }
 
-function sendMessage(message) {
+const sendMessage = message => {
     let packet = new HPacket(`{in:Shout}{i:1234}{s:"${message}"}{i:0}{i:0}{i:0}{i:-1}`)
     ext.sendToClient(packet)
 }
 
-function requestMarketPlaceAvarage(typeId) {
+const requestMarketPlaceAvarage = typeId => {
     if (!typeId) return
+
     let packet = new HPacket(`{out:GetMarketplaceItemStats}{i:1}{i:${typeId}}`)
     ext.sendToServer(packet)
 }
