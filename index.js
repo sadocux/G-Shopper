@@ -99,7 +99,6 @@ ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Objects', hMessage => {
 ext.interceptByNameOrHash(HDirection.TOCLIENT, 'Items', hMessage => {
     let hPacket = hMessage.getPacket();
     let wallItems = HWallItem.parse(hPacket)
-    console.log(wallItems)
 
     let array = []
     wallItems.forEach(item => {
