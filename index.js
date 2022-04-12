@@ -13,7 +13,7 @@ ext.run();
 
 let roomFloorItems
 let roomWallItems
-let floorResponse
+let habboData
 
 let clickedItem
 
@@ -53,19 +53,19 @@ ext.on('connect', (host) => {
 });
 
 async function fetchHabbo(hotel) {
-    let floorUrl = `https://${hotel}/gamedata/furnidata_json/0`
-    let floorUrlResponse = await fetch(floorUrl);
-    floorResponse = await floorUrlResponse.json();
+    let url = `https://${hotel}/gamedata/furnidata_json/0`
+    let res = await fetch(url);
+    habboData = await res.json();
 }
 
 function getFloorItemName(typeId) {
-    return floorResponse.roomitemtypes.furnitype.find(data => {
+    return habboData.roomitemtypes.furnitype.find(data => {
         return typeId == data.id
     }).name
 }
 
 function getWallItemName(typeId) {
-    return floorResponse.wallitemtypes.furnitype.find(data => {
+    return habboData.wallitemtypes.furnitype.find(data => {
         return typeId == data.id
     }).name
 }
