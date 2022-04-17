@@ -22,7 +22,7 @@ $ npm install
 ## How to run extension
 
 ```cmd
-$ node index.js -p 9092
+$ electron index.js -p 9092
 ```
 
 ## How to use extension
