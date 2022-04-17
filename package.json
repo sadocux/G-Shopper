@@ -1,17 +1,20 @@
 {
-  "name": "habbo-avarage",
-  "version": "1.0.0",
-  "description": "habbo-avarage",
+  "name": "habbo-average",
+  "version": "1.1.0",
+  "description": "habbo-average",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
-    "start": "node index.js",
-    "test": "node index.js -p 9092"
-    },
+    "start": "electron index.js",
+    "test": "electron index.js -p 9092"
+  },
   "author": "rocawear",
   "license": "ISC",
   "dependencies": {
     "gnode-api": "^0.2.4",
-    "node-fetch": "^3.2.3"
+    "node-fetch": "^2.6.6"
+  },
+  "devDependencies": {
+    "electron": "^18.0.4"
   }
 }
