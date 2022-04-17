@@ -28,6 +28,6 @@ $ node index.js -p 9092
 ## How to use extension
 
 ```
-!avg to toggle ON/OFF
+!avg to toggle ON/OFF or from "Extensions" tab
 Double click furniture on room
 ```
