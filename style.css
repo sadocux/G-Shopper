@@ -1,0 +1,54 @@
+body {
+  background: #202124;
+  font-family: Verdana, sans-serif;
+  margin: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-app-region: drag;
+}
+
+#content {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+#content h1 {
+  text-align: center;
+  color: #fff;
+}
+
+#content button {
+  padding: 10px;
+  width: 100%;
+  border: none;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+#content button:focus {
+  outline: none;
+}
+
+#content .green {
+  background-color: #00c853;
+}
+
+#content .red {
+  background-color: #d50000;
+}
+
+#content .hide {
+  color: white;
+  display: flex;
+  margin-left: auto;
+  cursor: pointer;
+  -webkit-app-region: auto;
+  -webkit-app-region: no-drag;
+}
