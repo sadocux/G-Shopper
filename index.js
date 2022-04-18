@@ -20,7 +20,7 @@ app.whenReady().then(async () => {
   const extensionInfo = {
     name: "G-Shopper",
     description: "Makes shopping easier",
-    version: "0.2",
+    version: "0.2.1",
     author: "rocawear",
   };
 
