@@ -52,8 +52,9 @@ app.whenReady().then(async () => {
     fullscreenable: false,
     resizable: false,
     autoHideMenuBar: true,
-    alwaysOnTop: true,
+    alwaysOnTop: false,
     frame: false,
+    icon: "icon.png",
   });
 
   win.loadFile("index.html");
