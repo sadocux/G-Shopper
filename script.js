@@ -26,7 +26,6 @@ const getIconSource = (item) => {
 };
 
 function createDomFinderItem(item) {
-  console.log(item);
   let imageSrc = item.icon || getIconSource(item);
   const element = document.createElement("li");
   element.classList.add("finder-list-item");
