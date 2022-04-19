@@ -3,13 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <title>G-Shopper</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+      integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://kraaden.github.io/autocomplete/autocomplete.css"
+    />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div id="content">
       <span class="hide" onclick="hide()">X</span>
       <h1>G-Shopper</h1>
-      <button id="status" class="red" onclick="status()">STATUS OFF</button>
+
+      <div class="button-row">
+        <button
+          id="average-button"
+          class="red"
+          onclick="averageStatus()"
+        ></button>
+        <button
+          id="finder-button"
+          class="red"
+          onclick="finderStatus()"
+        ></button>
+      </div>
+
+      <div class="finder-container">
+        <input id="search" type="text" placeholder="Add furniture by name" />
+
+        <ul id="finder-list"></ul>
+      </div>
     </div>
     <script src="script.js"></script>
   </body>

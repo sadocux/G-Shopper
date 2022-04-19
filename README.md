@@ -1,10 +1,9 @@
-# habbo-average
+# G-Shopper
 
 Node.js [G-Earth](https://github.com/sirjonasxx/G-Earth) extension<br>
 G-Node [G-Node](https://github.com/WiredSpast/G-Node)<br>
 Requires Node.js V15.0.0+
 
-![Screenshot](UI.png)
 ![Screenshot](screenshot.png)
 
 ## How to install
@@ -28,6 +27,13 @@ $ electron index.js -p 9092
 ## How to use extension
 
 ```
-!avg to toggle ON/OFF or from "Extensions" tab
-Double click furniture on room
+Open extension from "Extensions" tab or !avg / !finder
+```
+
+## Features
+
+```
+Double click to see marketplace average from item
+Add items to alert list so when you see that item on room it alerts you
+For every hotel own finderlist but same settings
 ```

@@ -14,41 +14,139 @@ body {
 #content {
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  box-sizing: border-box;
   padding: 20px;
 }
 
 #content h1 {
   text-align: center;
   color: #fff;
+  margin-top: 0;
 }
 
-#content button {
+.button-row {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  -webkit-app-region: no-drag;
+}
+.button-row button {
   padding: 10px;
-  width: 100%;
+  width: 50%;
   border: none;
   font-weight: bold;
   border-radius: 4px;
   cursor: pointer;
-  -webkit-app-region: no-drag;
 }
 
-#content button:focus {
-  outline: none;
-}
-
-#content .green {
+.green {
   background-color: #00c853;
 }
 
-#content .red {
+.red {
   background-color: #d50000;
 }
 
-#content .hide {
-  color: white;
+.hide {
+  color: #fff;
   display: flex;
   margin-left: auto;
   cursor: pointer;
-  -webkit-app-region: auto;
   -webkit-app-region: no-drag;
+}
+
+.autocomplete {
+  font: inherit;
+  border: none;
+  right: 20px;
+  width: auto !important;
+  background: #202124;
+  padding-top: 10px;
+  min-height: 370px;
+  bottom: 20px;
+  -webkit-app-region: no-drag;
+}
+
+#search {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 10px 0;
+  padding: 10px;
+  border: none;
+  padding-bottom: 10px;
+  background-color: #37383a;
+  border-radius: 4px;
+  color: #fff;
+}
+#search:focus {
+  outline: none;
+}
+
+#finder-list {
+  flex-direction: column;
+  display: flex;
+  max-height: 370px;
+  overflow: auto;
+  margin: 0;
+  list-style: none;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+.autocomplete > div,
+.finder-list-item {
+  display: flex;
+  align-items: center;
+  background-color: #37383a;
+  color: #bdc1c6;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+}
+
+.autocomplete > div:hover:not(.group),
+.autocomplete > div.selected {
+  background: #00c853;
+  color: #000;
+}
+.finder-container {
+  display: flex;
+  flex-direction: column;
+  -webkit-app-region: no-drag;
+}
+
+.finder-list-item span {
+  margin-right: 10px;
+}
+
+.finder-list-item button {
+  margin-left: auto;
+  background-color: #d50000;
+  padding: 5px;
+  border: none;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 8px;
+  color: white;
+}
+
+#finder-list::-webkit-scrollbar,
+.autocomplete::-webkit-scrollbar {
+  background: #202124;
+  width: 20px;
+}
+
+#finder-list::-webkit-scrollbar-thumb {
+  border-left: 10px solid #202124;
+  background: #d50000;
+  background-clip: padding-box;
+}
+
+.autocomplete::-webkit-scrollbar-thumb {
+  border-left: 10px solid #202124;
+  border-top: 10px solid #202124;
+  background: #d50000;
+  min-height: 40px;
 }

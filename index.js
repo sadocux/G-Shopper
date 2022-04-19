@@ -1,5 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const fetch = require("node-fetch");
+const fs = require("fs");
+const path = require("path");
+const settings = require("./settings.json");
 
 process.on("uncaughtException", function (error) {
   console.error(error);
@@ -7,33 +10,41 @@ process.on("uncaughtException", function (error) {
 });
 
 app.whenReady().then(async () => {
-  const { Extension, HPacket, HDirection, HFloorItem, HWallItem } =
-    await import("gnode-api");
+  const {
+    Extension,
+    HPacket,
+    HDirection,
+    HFloorItem,
+    HWallItem,
+    GAsync,
+    AwaitingPacket,
+  } = await import("gnode-api");
 
   let roomFloorItems;
   let roomWallItems;
   let habboData;
+  let finderList;
 
+  let language;
   let clickedItem;
-  let averageStatus = false;
+  let averageStatus = settings.averageStatus;
+  let finderStatus = settings.finderStatus;
 
   const extensionInfo = {
     name: "G-Shopper",
     description: "Makes shopping easier",
-    version: "0.2.1",
+    version: "0.2.2",
     author: "rocawear",
   };
 
   const ext = new Extension(extensionInfo);
+  const gAsync = new GAsync(ext);
+
   ext.run();
 
-  ext.on("click", () => {
-    win.show();
-  });
-
   const win = new BrowserWindow({
-    width: 300,
-    height: 200,
+    width: 600,
+    height: 600,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -42,23 +53,81 @@ app.whenReady().then(async () => {
     fullscreenable: false,
     resizable: false,
     autoHideMenuBar: true,
-    alwaysOnTop: true,
+    alwaysOnTop: false,
     frame: false,
+    icon: "icon.png",
   });
 
   win.loadFile("index.html");
+
+  ext.on("click", () => {
+    win.show();
+  });
 
   ipcMain.on("hide", () => {
     win.hide();
   });
 
-  ipcMain.on("status", () => {
+  ext.on("socketdisconnect", () => {
+    process.exit(0);
+  });
+
+  ipcMain.on("getSettings", () => {
+    win.webContents.send("getSettings", settings);
+  });
+
+  ipcMain.on("averageStatus", () => {
     averageStatus = !averageStatus;
-    sendMessage(`Average checker ${averageStatus ? "on" : "off"}`);
+    settings.averageStatus = averageStatus;
+    fs.writeFileSync(
+      path.join(__dirname, "settings.json"),
+      JSON.stringify(settings, null, 2)
+    );
+
     win.webContents.send("averageStatus", averageStatus);
   });
 
+  ipcMain.on("finderStatus", () => {
+    finderStatus = !finderStatus;
+    settings.finderStatus = finderStatus;
+    fs.writeFileSync(
+      path.join(__dirname, "settings.json"),
+      JSON.stringify(settings, null, 2)
+    );
+
+    win.webContents.send("finderStatus", finderStatus);
+  });
+
+  ipcMain.on("getFinderList", () => {
+    finderList = getFinderList();
+    win.webContents.send("getFinderList", finderList);
+  });
+
+  ipcMain.on("addFinderList", (event, item) => {
+    finderList.push({
+      name: item.name,
+      id: item.id,
+      classname: item.classname,
+    });
+    fs.writeFileSync(
+      path.join(__dirname, `finder/${language}-finder.json`),
+      JSON.stringify(finderList),
+      "utf8"
+    );
+  });
+
+  ipcMain.on("removeFinderItem", (event, item) => {
+    finderList = finderList.filter((i) => i.id !== item.id);
+    fs.writeFileSync(
+      `finder/${language}-finder.json`,
+      JSON.stringify(finderList),
+      "utf8"
+    );
+  });
+
   ext.on("connect", (host) => {
+    language = host.split(".")[0];
+
     switch (host) {
       case "game-br.habbo.com":
         fetchHabbo("www.habbo.com.br");
@@ -93,18 +162,28 @@ app.whenReady().then(async () => {
     }
   });
 
+  const getFinderList = () => {
+    const filePath = path.join(__dirname, `finder/${language}-finder.json`);
+    const data = fs.readFileSync(filePath, "utf8");
+    const json = JSON.parse(data);
+    return json;
+  };
+
   const fetchHabbo = async (hotel) => {
     let url = `https://${hotel}/gamedata/furnidata_json/0`;
     let res = await fetch(url);
-    let json = await res.json();
-    habboData = [
-      ...json.roomitemtypes.furnitype,
-      ...json.wallitemtypes.furnitype,
-    ];
+    habboData = await res.json();
+
+    win.webContents.send("getHabboData", habboData);
+  };
+  const getFloorItemName = (typeId) => {
+    return habboData.roomitemtypes.furnitype.find((data) => {
+      return typeId == data.id;
+    }).name;
   };
 
-  const getItemName = (typeId) => {
-    return habboData.find((data) => {
+  const getWallItemName = (typeId) => {
+    return habboData.wallitemtypes.furnitype.find((data) => {
       return typeId == data.id;
     }).name;
   };
@@ -116,32 +195,80 @@ app.whenReady().then(async () => {
     ext.sendToClient(packet);
   };
 
-  const requestMarketPlaceAverage = (typeId) => {
-    if (!typeId) return;
+  const isOnList = (item) => {
+    return finderList.find((i) => i.id == item.typeId);
+  };
 
-    let packet = new HPacket(`{out:GetMarketplaceItemStats}{i:1}{i:${typeId}}`);
+  const requestMarketPlaceAverage = (typeId, furniType) => {
+    if (!typeId || !furniType) return;
+
+    let packet = new HPacket(
+      `{out:GetMarketplaceItemStats}{i:${furniType}}{i:${typeId}}`
+    );
     ext.sendToServer(packet);
   };
 
-  ext.interceptByNameOrHash(HDirection.TOCLIENT, "Objects", (hMessage) => {
-    let hPacket = hMessage.getPacket();
-    let floorItems = HFloorItem.parse(hPacket);
+  ext.interceptByNameOrHash(
+    HDirection.TOCLIENT,
+    "Objects",
+    async (hMessage) => {
+      let hPacket = hMessage.getPacket();
+      let floorItems = HFloorItem.parse(hPacket);
+      let alerted = [];
 
-    roomFloorItems = floorItems.map((item) => ({
-      id: item.id,
-      typeId: item.typeId,
-      name: getItemName(item.typeId),
-    }));
-  });
+      if (finderStatus) {
+        let awaitedPacket = await gAsync.awaitPacket(
+          new AwaitingPacket("GetGuestRoomResult", HDirection.TOCLIENT, 5000)
+        );
 
-  ext.interceptByNameOrHash(HDirection.TOCLIENT, "Items", (hMessage) => {
+        if (!awaitedPacket != undefined) {
+          floorItems.forEach((item) => {
+            if (isOnList(item)) {
+              if (!alerted.includes(item.typeId)) {
+                alerted.push(item.typeId);
+                let name = finderList.find((i) => i.id == item.typeId).name;
+                sendMessage(`Found ${name}`);
+              }
+            }
+          });
+        }
+      }
+
+      roomFloorItems = floorItems.map((item) => ({
+        id: item.id,
+        typeId: item.typeId,
+        name: getFloorItemName(item.typeId),
+      }));
+    }
+  );
+
+  ext.interceptByNameOrHash(HDirection.TOCLIENT, "Items", async (hMessage) => {
     let hPacket = hMessage.getPacket();
     let wallItems = HWallItem.parse(hPacket);
+    let alerted = [];
+
+    if (finderStatus) {
+      let awaitedPacket = await gAsync.awaitPacket(
+        new AwaitingPacket("GetGuestRoomResult", HDirection.TOCLIENT, 5000)
+      );
+
+      if (!awaitedPacket != undefined) {
+        wallItems.forEach((item) => {
+          if (isOnList(item)) {
+            if (!alerted.includes(item.typeId)) {
+              alerted.push(item.typeId);
+              let name = finderList.find((i) => i.id == item.typeId).name;
+              sendMessage(`Found ${name}`);
+            }
+          }
+        });
+      }
+    }
 
     roomWallItems = wallItems.map((item) => ({
       id: item.id,
       typeId: item.typeId,
-      name: getItemName(item.typeId),
+      name: getWallItemName(item.typeId),
     }));
   });
 
@@ -157,7 +284,7 @@ app.whenReady().then(async () => {
       return item.id == id;
     });
 
-    requestMarketPlaceAverage(clickedItem.typeId);
+    requestMarketPlaceAverage(clickedItem.typeId, 1);
   });
 
   ext.interceptByNameOrHash(HDirection.TOSERVER, "UseWallItem", (hMessage) => {
@@ -172,7 +299,7 @@ app.whenReady().then(async () => {
       return item.id == id;
     });
 
-    requestMarketPlaceAverage(clickedItem.typeId);
+    requestMarketPlaceAverage(clickedItem.typeId, 2);
   });
 
   ext.interceptByNameOrHash(
@@ -198,6 +325,13 @@ app.whenReady().then(async () => {
       averageStatus = !averageStatus;
       sendMessage(`Average checker ${averageStatus ? "on" : "off"}`);
       win.webContents.send("averageStatus", averageStatus);
+    }
+
+    if (message.startsWith("!finder")) {
+      hMessage.blocked = true;
+      finderStatus = !finderStatus;
+      sendMessage(`Furniture finder ${finderStatus ? "on" : "off"}`);
+      win.webContents.send("finderStatus", finderStatus);
     }
   });
 });
