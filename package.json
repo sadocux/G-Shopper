@@ -1,6 +1,6 @@
 {
   "name": "habbo-average",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "habbo-average",
   "main": "index.js",
   "type": "commonjs",
@@ -11,6 +11,7 @@
   "author": "rocawear",
   "license": "ISC",
   "dependencies": {
+    "autocompleter": "^6.1.2",
     "gnode-api": "^0.2.4",
     "node-fetch": "^2.6.6"
   },

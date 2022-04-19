@@ -28,6 +28,14 @@ $ electron index.js -p 9092
 ## How to use extension
 
 ```
-!avg to toggle ON/OFF or from "Extensions" tab
-Double click furniture on room
+Open extension from "Extensions" tab or !avg / !finder
+
+```
+
+## Features
+
+```
+Double click to see marketplace average from item
+Add items to alert list so when you see that item on room it alerts you
+
 ```
