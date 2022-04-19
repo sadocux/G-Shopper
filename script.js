@@ -50,19 +50,13 @@ function removeFinderItem(item, element) {
 
 ipcRenderer.once("getSettings", (event, message) => {
   if (message.averageStatus) {
-    averageButton.classList.remove("red");
-    averageButton.classList.add("green");
-  } else {
-    averageButton.classList.remove("green");
-    averageButton.classList.add("red");
+    averageButton.classList.remove("red", "green");
+    averageButton.classList.add(message.averageStatus ? "green" : "red");
   }
 
   if (message.finderStatus) {
-    finderButton.classList.remove("red");
-    finderButton.classList.add("green");
-  } else {
-    finderButton.classList.remove("green");
-    finderButton.classList.add("red");
+    finderButton.classList.remove("red", "green");
+    finderButton.classList.add(message.finderStatus ? "green" : "red");
   }
 
   averageButton.innerHTML = `AVERAGE ${message.averageStatus ? "ON" : "OFF"}`;
