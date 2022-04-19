@@ -94,6 +94,7 @@ ipcRenderer.once("getHabboData", (event, data) => {
     onSelect: function (item, input) {
       if (!finderList.find((i) => i.id === item.id)) {
         addToFinderList(item);
+        input.value = "";
       } else {
         console.log(`${item.name} is already on the list`);
       }
