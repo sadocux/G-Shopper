@@ -76,7 +76,6 @@ ipcRenderer.once("getSettings", (event, message) => {
 });
 
 ipcRenderer.once("getFinderList", (event, message) => {
-  console.log("got list");
   finderList = message;
   list.innerHTML = "";
   message.forEach((item) => {
