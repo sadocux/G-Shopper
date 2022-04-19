@@ -4,7 +4,8 @@ Node.js [G-Earth](https://github.com/sirjonasxx/G-Earth) extension<br>
 G-Node [G-Node](https://github.com/WiredSpast/G-Node)<br>
 Requires Node.js V15.0.0+
 
-![Screenshot](UI.png)
+![Screenshot](UI1.png)
+![Screenshot](UI2.png)
 ![Screenshot](screenshot.png)
 
 ## How to install
