@@ -199,10 +199,12 @@ app.whenReady().then(async () => {
     return finderList.find((i) => i.id == item.typeId);
   };
 
-  const requestMarketPlaceAverage = (typeId) => {
-    if (!typeId) return;
+  const requestMarketPlaceAverage = (typeId, furniType) => {
+    if (!typeId || !furniType) return;
 
-    let packet = new HPacket(`{out:GetMarketplaceItemStats}{i:1}{i:${typeId}}`);
+    let packet = new HPacket(
+      `{out:GetMarketplaceItemStats}{i:${furniType}}{i:${typeId}}`
+    );
     ext.sendToServer(packet);
   };
 
@@ -282,7 +284,7 @@ app.whenReady().then(async () => {
       return item.id == id;
     });
 
-    requestMarketPlaceAverage(clickedItem.typeId);
+    requestMarketPlaceAverage(clickedItem.typeId, 1);
   });
 
   ext.interceptByNameOrHash(HDirection.TOSERVER, "UseWallItem", (hMessage) => {
@@ -297,7 +299,7 @@ app.whenReady().then(async () => {
       return item.id == id;
     });
 
-    requestMarketPlaceAverage(clickedItem.typeId);
+    requestMarketPlaceAverage(clickedItem.typeId, 2);
   });
 
   ext.interceptByNameOrHash(

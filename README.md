@@ -35,4 +35,5 @@ Open extension from "Extensions" tab or !avg / !finder
 ```
 Double click to see marketplace average from item
 Add items to alert list so when you see that item on room it alerts you
+For every hotel own finderlist but same settings
 ```
