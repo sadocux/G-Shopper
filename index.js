@@ -108,6 +108,7 @@ app.whenReady().then(async () => {
       name: item.name,
       id: item.id,
       classname: item.classname,
+      icon: getIconSource(item),
     });
     fs.writeFileSync(
       path.join(__dirname, `finder/${language}-finder.json`),
@@ -174,6 +175,9 @@ app.whenReady().then(async () => {
     let res = await fetch(url);
     habboData = await res.json();
 
+    finderList = getFinderList();
+    win.webContents.send("getFinderList", finderList);
+
     win.webContents.send("getHabboData", habboData);
   };
   const getFloorItemName = (typeId) => {
@@ -197,6 +201,12 @@ app.whenReady().then(async () => {
 
   const isOnList = (item) => {
     return finderList.find((i) => i.id == item.typeId);
+  };
+
+  const getIconSource = (item) => {
+    return `https://images.habbo.com/dcr/hof_furni/${
+      item.revision
+    }/${item.classname.replace("*", "_")}_icon.png`;
   };
 
   const requestMarketPlaceAverage = (typeId, furniType) => {

@@ -19,11 +19,20 @@ function hide() {
   ipcRenderer.send("hide");
 }
 
+const getIconSource = (item) => {
+  return `https://images.habbo.com/dcr/hof_furni/${
+    item.revision
+  }/${item.classname.replace("*", "_")}_icon.png`;
+};
+
 function createDomFinderItem(item) {
+  console.log(item);
+  let imageSrc = item.icon || getIconSource(item);
   const element = document.createElement("li");
   element.classList.add("finder-list-item");
   element.innerHTML = `
-  <span>${item.name}</span>
+  <img class="furniture-image" src="${imageSrc}" alt="${item.name}" />
+<span>${item.name}</span>
   <span style="margin-left: auto;">${item.classname}</span>
   `;
 
@@ -66,7 +75,8 @@ ipcRenderer.once("getSettings", (event, message) => {
   }`;
 });
 
-ipcRenderer.on("getFinderList", (event, message) => {
+ipcRenderer.once("getFinderList", (event, message) => {
+  console.log("got list");
   finderList = message;
   list.innerHTML = "";
   message.forEach((item) => {
@@ -107,7 +117,7 @@ ipcRenderer.once("getHabboData", (event, data) => {
   ];
   autocomplete({
     input: document.getElementById("search"),
-    minLength: 1,
+    minLength: 2,
     onSelect: function (item, input) {
       if (!finderList.find((i) => i.id === item.id)) {
         addToFinderList(item);
@@ -128,6 +138,9 @@ ipcRenderer.once("getHabboData", (event, data) => {
     render: function (item, value) {
       let itemElement = document.createElement("div");
       itemElement.innerHTML = `
+      <img class="furniture-image" src="${getIconSource(item)}" alt="${
+        item.name
+      }" />
       <span>${item.name}</span>
       <span style="margin-left: auto;">${item.classname}</span>`;
       return itemElement;
@@ -139,6 +152,5 @@ ipcRenderer.once("getHabboData", (event, data) => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  ipcRenderer.send("getFinderList");
   ipcRenderer.send("getSettings");
 });
