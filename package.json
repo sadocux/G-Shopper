@@ -1,7 +1,7 @@
 {
-  "name": "habbo-average",
+  "name": "g-shopper",
   "version": "0.2.2",
-  "description": "habbo-average",
+  "description": "Makes shopping easier",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {

@@ -1,4 +1,4 @@
-# habbo-average
+# G-Shopper
 
 Node.js [G-Earth](https://github.com/sirjonasxx/G-Earth) extension<br>
 G-Node [G-Node](https://github.com/WiredSpast/G-Node)<br>
