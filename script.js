@@ -24,8 +24,7 @@ function createDomFinderItem(item) {
   element.classList.add("finder-list-item");
   element.innerHTML = `
   <span>${item.name}</span>
-  <span>-</span>
-  <span>${item.classname}</span>
+  <span style="margin-left: auto;">${item.classname}</span>
   `;
 
   const removeButton = document.createElement("button");
@@ -120,7 +119,7 @@ ipcRenderer.once("getHabboData", (event, data) => {
         addToFinderList(item);
         input.value = "";
       } else {
-        console.log(`${item.name} is already on the list`);
+        // console.log(`${item.name} is already on the list`);
       }
     },
     fetch: function (text, callback) {
@@ -134,7 +133,9 @@ ipcRenderer.once("getHabboData", (event, data) => {
     },
     render: function (item, value) {
       let itemElement = document.createElement("div");
-      itemElement.textContent = item.name;
+      itemElement.innerHTML = `
+      <span>${item.name}</span>
+      <span style="margin-left: auto;">${item.classname}</span>`;
       return itemElement;
     },
     emptyMsg: "No furnitures found with that name",
