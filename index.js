@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
+const settings = require("./settings.json");
 
 process.on("uncaughtException", function (error) {
   console.error(error);
@@ -26,8 +27,8 @@ app.whenReady().then(async () => {
 
   let language;
   let clickedItem;
-  let averageStatus = false;
-  let finderStatus = false;
+  let averageStatus = settings.averageStatus;
+  let finderStatus = settings.finderStatus;
 
   const extensionInfo = {
     name: "G-Shopper",
@@ -71,13 +72,29 @@ app.whenReady().then(async () => {
     process.exit(0);
   });
 
+  ipcMain.on("getSettings", () => {
+    win.webContents.send("getSettings", settings);
+  });
+
   ipcMain.on("averageStatus", () => {
     averageStatus = !averageStatus;
+    settings.averageStatus = averageStatus;
+    fs.writeFileSync(
+      path.join(__dirname, "settings.json"),
+      JSON.stringify(settings, null, 2)
+    );
+
     win.webContents.send("averageStatus", averageStatus);
   });
 
   ipcMain.on("finderStatus", () => {
     finderStatus = !finderStatus;
+    settings.finderStatus = finderStatus;
+    fs.writeFileSync(
+      path.join(__dirname, "settings.json"),
+      JSON.stringify(settings, null, 2)
+    );
+
     win.webContents.send("finderStatus", finderStatus);
   });
 

@@ -28,7 +28,6 @@ $ electron index.js -p 9092
 
 ```
 Open extension from "Extensions" tab or !avg / !finder
-
 ```
 
 ## Features
@@ -36,5 +35,4 @@ Open extension from "Extensions" tab or !avg / !finder
 ```
 Double click to see marketplace average from item
 Add items to alert list so when you see that item on room it alerts you
-
 ```

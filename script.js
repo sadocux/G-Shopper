@@ -49,6 +49,30 @@ function removeFinderItem(item, element) {
   ipcRenderer.send("removeFinderItem", item);
 }
 
+ipcRenderer.once("getSettings", (event, message) => {
+  if (message.averageStatus) {
+    averageButton.classList.remove("red");
+    averageButton.classList.add("green");
+  } else {
+    averageButton.classList.remove("green");
+    averageButton.classList.add("red");
+  }
+
+  if (message.finderStatus) {
+    finderButton.classList.remove("red");
+    finderButton.classList.add("green");
+  } else {
+    finderButton.classList.remove("green");
+    finderButton.classList.add("red");
+  }
+
+  averageButton.innerHTML = `AVERAGE ${message.averageStatus ? "ON" : "OFF"}`;
+
+  finderButton.innerHTML = `FINDER ${
+    message.finderButtonStatus ? "ON" : "OFF"
+  }`;
+});
+
 ipcRenderer.on("getFinderList", (event, message) => {
   finderList = message;
   list.innerHTML = "";
@@ -121,4 +145,5 @@ ipcRenderer.once("getHabboData", (event, data) => {
 
 document.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.send("getFinderList");
+  ipcRenderer.send("getSettings");
 });
